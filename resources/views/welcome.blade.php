@@ -569,7 +569,9 @@
                 <div class="product-info">
                     <h3 class="product-name">Casco MT-15 Edition</h3>
                     <p class="product-price">$299.99</p>
-                    <button class="product-button">Añadir al Carrito</button>
+                    <a href="/detalles/1" class="product-button" style="display: block; text-align: center; text-decoration: none; color: white;">
+                        Ver Detalles
+                    </a>
                 </div>
             </div>
             <div class="product-card fade-in">
@@ -577,7 +579,9 @@
                 <div class="product-info">
                     <h3 class="product-name">Escape Akrapovic</h3>
                     <p class="product-price">$599.99</p>
-                    <button class="product-button">Añadir al Carrito</button>
+                    <a href="/detalles/2" class="product-button" style="display: block; text-align: center; text-decoration: none; color: white;">
+                        Ver Detalles
+                    </a>
                 </div>
             </div>
             <div class="product-card fade-in">
@@ -585,7 +589,9 @@
                 <div class="product-info">
                     <h3 class="product-name">Kit Performance</h3>
                     <p class="product-price">$899.99</p>
-                    <button class="product-button">Añadir al Carrito</button>
+                    <a href="/detalles/3" class="product-button" style="display: block; text-align: center; text-decoration: none; color: white;">
+                        Ver Detalles
+                    </a>
                 </div>
             </div>
             <div class="product-card fade-in">
@@ -593,7 +599,9 @@
                 <div class="product-info">
                     <h3 class="product-name">Guantes Racing</h3>
                     <p class="product-price">$149.99</p>
-                    <button class="product-button">Añadir al Carrito</button>
+                    <a href="/detalles/4" class="product-button" style="display: block; text-align: center; text-decoration: none; color: white;">
+                        Ver Detalles
+                    </a>
                 </div>
             </div>
         </div>
@@ -661,18 +669,7 @@
         document.querySelectorAll('.fade-in').forEach(el => {
             observer.observe(el);
         });
-
-        // Add to cart animation
-        document.querySelectorAll('.product-button').forEach(button => {
-            button.addEventListener('click', function() {
-                this.textContent = '✓ Añadido';
-                this.style.background = '#00C851';
-                setTimeout(() => {
-                    this.textContent = 'Añadir al Carrito';
-                    this.style.background = '';
-                }, 2000);
-            });
-        });
+        
     </script>
 </body>
 </html>
