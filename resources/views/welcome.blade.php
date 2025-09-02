@@ -520,8 +520,16 @@
                 <li><a href="#home">Inicio</a></li>
                 <li><a href="#features">Características</a></li>
                 <li><a href="#products">Productos</a></li>
+                <li><a href="/lista-compras">Lista de Compras</a></li>
                 <li><a href="#contact">Contacto</a></li>
-                <li><a href="#" style="background: var(--accent-red); padding: 0.5rem 1.5rem; border-radius: 25px;">Carrito (0)</a></li>
+                <li style="position: relative;">
+                    <a href="/carrito" style="background: var(--accent-red); padding: 0.5rem 1.5rem; border-radius: 25px;">
+                        🛒 Carrito
+                        @if(isset($cartCount) && $cartCount > 0)
+                        <span style="background: var(--accent-red); color: white; border-radius: 50%; padding: 2px 6px; font-size: 0.75rem; position: absolute; top: -5px; right: -10px;">{{ $cartCount }}</span>
+                        @endif
+                    </a>
+                </li>
             </ul>
         </div>
     </nav>
@@ -564,38 +572,60 @@
     <section class="products" id="products">
         <h2>Productos Destacados</h2>
         <div class="products-grid">
-            <div class="product-card fade-in">
-                <div class="product-image"></div>
-                <div class="product-info">
-                    <h3 class="product-name">Casco MT-15 Edition</h3>
-                    <p class="product-price">$299.99</p>
-                    <button class="product-button">Añadir al Carrito</button>
+            @if(isset($productos))
+                @foreach($productos as $producto)
+                <div class="product-card fade-in">
+                    <div class="product-image" style="background-image: url('{{ $producto['imagen'] ?? '' }}'); background-size: cover; background-position: center;"></div>
+                    <div class="product-info">
+                        <h3 class="product-name">{{ $producto['nombre'] }}</h3>
+                        <p class="product-price">${{ number_format($producto['precio'], 2) }}</p>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="product-button" style="flex: 1;" 
+                                    onclick="addToCartQuick({{ $producto['id'] }}, '{{ $producto['nombre'] }}', {{ $producto['precio'] }}, '{{ $producto['imagen'] ?? '' }}')">
+                                🛒 Añadir
+                            </button>
+                            <a href="/detalles/{{ $producto['id'] }}" class="product-button" 
+                            style="flex: 1; display: flex; align-items: center; justify-content: center; text-decoration: none; color: white; background: linear-gradient(45deg, #333, #555);">
+                                👁️ Ver
+                            </a>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="product-card fade-in">
-                <div class="product-image"></div>
-                <div class="product-info">
-                    <h3 class="product-name">Escape Akrapovic</h3>
-                    <p class="product-price">$599.99</p>
-                    <button class="product-button">Añadir al Carrito</button>
+                @endforeach
+            @else
+                <div class="product-card fade-in">
+                    <div class="product-image"></div>
+                    <div class="product-info">
+                        <h3 class="product-name">Casco MT-15 Edition</h3>
+                        <p class="product-price">$299.99</p>
+                        <button class="product-button">Añadir al Carrito</button>
+                    </div>
                 </div>
-            </div>
-            <div class="product-card fade-in">
-                <div class="product-image"></div>
-                <div class="product-info">
-                    <h3 class="product-name">Kit Performance</h3>
-                    <p class="product-price">$899.99</p>
-                    <button class="product-button">Añadir al Carrito</button>
+                <div class="product-card fade-in">
+                    <div class="product-image"></div>
+                    <div class="product-info">
+                        <h3 class="product-name">Escape Akrapovic</h3>
+                        <p class="product-price">$599.99</p>
+                        <button class="product-button">Añadir al Carrito</button>
+                    </div>
                 </div>
-            </div>
-            <div class="product-card fade-in">
-                <div class="product-image"></div>
-                <div class="product-info">
-                    <h3 class="product-name">Guantes Racing</h3>
-                    <p class="product-price">$149.99</p>
-                    <button class="product-button">Añadir al Carrito</button>
+                <div class="product-card fade-in">
+                    <div class="product-image"></div>
+                    <div class="product-info">
+                        <h3 class="product-name">Kit Performance</h3>
+                        <p class="product-price">$899.99</p>
+                        <button class="product-button">Añadir al Carrito</button>
+                    </div>
                 </div>
-            </div>
+                <div class="product-card fade-in">
+                    <div class="product-image"></div>
+                    <div class="product-info">
+                        <h3 class="product-name">Guantes Racing</h3>
+                        <p class="product-price">$149.99</p>
+                        <button class="product-button">Añadir al Carrito</button>
+                    </div>
+                </div>
+            @endif
         </div>
     </section>
 
@@ -662,17 +692,53 @@
             observer.observe(el);
         });
 
-        // Add to cart animation
-        document.querySelectorAll('.product-button').forEach(button => {
-            button.addEventListener('click', function() {
-                this.textContent = '✓ Añadido';
-                this.style.background = '#00C851';
-                setTimeout(() => {
-                    this.textContent = 'Añadir al Carrito';
-                    this.style.background = '';
-                }, 2000);
+        // Función para añadir al carrito
+        function addToCartQuick(productId, productName, productPrice, productImage) {
+            fetch('/carrito/agregar', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({
+                    id: productId,
+                    nombre: productName,
+                    precio: productPrice,
+                    imagen: productImage,
+                    cantidad: 1
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Actualizar el contador del carrito
+                    updateCartBadge(data.cartCount);
+                    
+                    // Mostrar confirmación
+                    const button = event.target;
+                    const originalText = button.textContent;
+                    button.textContent = '✓ Añadido';
+                    button.style.background = '#00C851';
+                    
+                    setTimeout(() => {
+                        button.textContent = originalText;
+                        button.style.background = '';
+                    }, 2000);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al añadir al carrito');
             });
-        });
+        }
+        
+        // Actualizar el contador del carrito
+        function updateCartBadge(count) {
+            const cartLink = document.querySelector('.nav-links a[href="/carrito"]');
+            if (cartLink) {
+                cartLink.innerHTML = `🛒 Carrito ${count > 0 ? `<span style="background: var(--accent-red); color: white; border-radius: 50%; padding: 2px 6px; font-size: 0.75rem; position: absolute; top: -5px; right: -10px;">${count}</span>` : ''}`;
+            }
+        }
     </script>
 </body>
 </html>
