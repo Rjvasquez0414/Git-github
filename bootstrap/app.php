@@ -13,10 +13,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->validateCsrfTokens(except: [
             'carrito/*',
-<<<<<<< HEAD
             'lista-compras/*'
-=======
->>>>>>> desarrollo
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

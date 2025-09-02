@@ -172,4 +172,4 @@ Route::post('/carrito/vaciar', function () {
         'cartCount' => 0
     ]);
 })->name('carrito.vaciar');
-})->name('carrito.vaciar');
+
