@@ -460,6 +460,143 @@
             margin-bottom: 0.5rem;
         }
 
+<<<<<<< HEAD
+=======
+        /* Tabs Section */
+        .tabs-section {
+            max-width: 1400px;
+            margin: 4rem auto;
+            padding: 0 5%;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .tab {
+            padding: 1rem 2rem;
+            background: transparent;
+            border: none;
+            color: #888;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            font-size: 1.1rem;
+        }
+
+        .tab::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--yamaha-blue);
+            transition: width 0.3s ease;
+        }
+
+        .tab:hover {
+            color: white;
+        }
+
+        .tab.active {
+            color: var(--yamaha-blue);
+        }
+
+        .tab.active::after {
+            width: 100%;
+        }
+
+        .tab-content {
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 15px;
+            min-height: 300px;
+        }
+
+        .specs-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+        }
+
+        .spec-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        .spec-label {
+            color: #888;
+        }
+
+        .spec-value {
+            font-weight: bold;
+            color: var(--yamaha-blue);
+        }
+
+        /* Related Products */
+        .related-products {
+            max-width: 1400px;
+            margin: 4rem auto;
+            padding: 0 5%;
+        }
+
+        .related-products h2 {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .related-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .related-card {
+            background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .related-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 51, 160, 0.3);
+        }
+
+        .related-image {
+            height: 200px;
+            background: linear-gradient(45deg, #333, #555);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+        }
+
+        .related-info {
+            padding: 1.5rem;
+        }
+
+        .related-name {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .related-price {
+            font-size: 1.5rem;
+            color: var(--yamaha-blue);
+            font-weight: bold;
+        }
+
+>>>>>>> desarrollo
         /* Responsive */
         @media (max-width: 1024px) {
             .product-detail {
@@ -487,6 +624,17 @@
             .action-buttons {
                 flex-direction: column;
             }
+<<<<<<< HEAD
+=======
+
+            .specs-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+>>>>>>> desarrollo
         }
     </style>
 </head>
@@ -525,11 +673,15 @@
         <!-- Gallery -->
         <div class="product-gallery">
             <div class="main-image">
+<<<<<<< HEAD
                 @if(isset($producto['imagen']) && $producto['imagen'])
                 <img src="{{ $producto['imagen'] }}" alt="{{ $producto['nombre'] }}" style="width: 100%; height: 100%; object-fit: cover;">
                 @else
                 🏍️
                 @endif
+=======
+                🏍️
+>>>>>>> desarrollo
             </div>
             <div class="thumbnail-grid">
                 <div class="thumbnail active">📷</div>
@@ -557,7 +709,11 @@
 
             <div class="product-description">
                 <p>{{ $producto['descripcion'] ?? 'Descripción del producto' }}</p>
+<<<<<<< HEAD
                 <p>Diseñado específicamente para la Yamaha MT-15, este producto combina calidad premium con el estilo agresivo que caracteriza a la línea MT.</p>
+=======
+                <p>Diseñado específicamente para la Yamaha MT-15, este producto combina calidad premium con el estilo agresivo que caracteriza a la línea MT. Fabricado con los más altos estándares de calidad para garantizar durabilidad y rendimiento excepcional.</p>
+>>>>>>> desarrollo
             </div>
 
             <!-- Product Options -->
@@ -622,6 +778,69 @@
         </div>
     </div>
 
+<<<<<<< HEAD
+=======
+    <!-- Tabs Section -->
+    <div class="tabs-section">
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('description')">Descripción</button>
+            <button class="tab" onclick="showTab('specs')">Especificaciones</button>
+            <button class="tab" onclick="showTab('reviews')">Reseñas</button>
+            <button class="tab" onclick="showTab('shipping')">Envío</button>
+        </div>
+        
+        <div class="tab-content" id="tab-content">
+            <div id="description-content">
+                <h3>Descripción Detallada</h3>
+                <p>Este producto ha sido diseñado específicamente para los entusiastas de la Yamaha MT-15 que buscan mejorar su experiencia de conducción. Cada detalle ha sido cuidadosamente pensado para ofrecer el máximo rendimiento y estilo.</p>
+                <br>
+                <p>Características principales:</p>
+                <ul style="margin-left: 2rem; margin-top: 1rem;">
+                    <li>Material de alta calidad resistente a condiciones extremas</li>
+                    <li>Diseño aerodinámico que mejora el rendimiento</li>
+                    <li>Fácil instalación con manual incluido</li>
+                    <li>Certificación de seguridad internacional</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Related Products -->
+    <div class="related-products">
+        <h2>Productos Relacionados</h2>
+        <div class="related-grid">
+            <a href="/detalles/1" class="related-card">
+                <div class="related-image">🪖</div>
+                <div class="related-info">
+                    <div class="related-name">Casco MT-15 Edition</div>
+                    <div class="related-price">$299.99</div>
+                </div>
+            </a>
+            <a href="/detalles/2" class="related-card">
+                <div class="related-image">🔧</div>
+                <div class="related-info">
+                    <div class="related-name">Escape Akrapovic</div>
+                    <div class="related-price">$599.99</div>
+                </div>
+            </a>
+            <a href="/detalles/3" class="related-card">
+                <div class="related-image">⚙️</div>
+                <div class="related-info">
+                    <div class="related-name">Kit Performance</div>
+                    <div class="related-price">$899.99</div>
+                </div>
+            </a>
+            <a href="/detalles/4" class="related-card">
+                <div class="related-image">🧤</div>
+                <div class="related-info">
+                    <div class="related-name">Guantes Racing</div>
+                    <div class="related-price">$149.99</div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+>>>>>>> desarrollo
     <script>
         // Quantity controls
         function incrementQty() {
@@ -702,8 +921,111 @@
             thumb.addEventListener('click', function() {
                 document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
                 this.classList.add('active');
+<<<<<<< HEAD
             });
         });
+=======
+                // Here you would change the main image
+            });
+        });
+
+        // Tabs functionality
+        function showTab(tabName) {
+            // Update active tab
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Update content
+            const content = document.getElementById('tab-content');
+            
+            switch(tabName) {
+                case 'description':
+                    content.innerHTML = `
+                        <div id="description-content">
+                            <h3>Descripción Detallada</h3>
+                            <p>Este producto ha sido diseñado específicamente para los entusiastas de la Yamaha MT-15 que buscan mejorar su experiencia de conducción. Cada detalle ha sido cuidadosamente pensado para ofrecer el máximo rendimiento y estilo.</p>
+                            <br>
+                            <p>Características principales:</p>
+                            <ul style="margin-left: 2rem; margin-top: 1rem;">
+                                <li>Material de alta calidad resistente a condiciones extremas</li>
+                                <li>Diseño aerodinámico que mejora el rendimiento</li>
+                                <li>Fácil instalación con manual incluido</li>
+                                <li>Certificación de seguridad internacional</li>
+                            </ul>
+                        </div>
+                    `;
+                    break;
+                case 'specs':
+                    content.innerHTML = `
+                        <div class="specs-grid">
+                            <div class="spec-item">
+                                <span class="spec-label">Material</span>
+                                <span class="spec-value">Fibra de carbono</span>
+                            </div>
+                            <div class="spec-item">
+                                <span class="spec-label">Peso</span>
+                                <span class="spec-value">1.2 kg</span>
+                            </div>
+                            <div class="spec-item">
+                                <span class="spec-label">Compatibilidad</span>
+                                <span class="spec-value">MT-15 2019-2024</span>
+                            </div>
+                            <div class="spec-item">
+                                <span class="spec-label">Certificación</span>
+                                <span class="spec-value">ECE 22.06</span>
+                            </div>
+                            <div class="spec-item">
+                                <span class="spec-label">Garantía</span>
+                                <span class="spec-value">1 año</span>
+                            </div>
+                            <div class="spec-item">
+                                <span class="spec-label">País de origen</span>
+                                <span class="spec-value">Japón</span>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'reviews':
+                    content.innerHTML = `
+                        <div>
+                            <h3>Reseñas de Clientes</h3>
+                            <div style="margin-top: 2rem;">
+                                <div style="padding: 1.5rem; background: rgba(255,255,255,0.05); border-radius: 10px; margin-bottom: 1rem;">
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+                                        <strong>Carlos M.</strong>
+                                        <span style="color: #FFD700;">⭐⭐⭐⭐⭐</span>
+                                    </div>
+                                    <p>Excelente producto, superó mis expectativas. La calidad es premium y la instalación fue muy sencilla.</p>
+                                </div>
+                                <div style="padding: 1.5rem; background: rgba(255,255,255,0.05); border-radius: 10px; margin-bottom: 1rem;">
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+                                        <strong>Ana R.</strong>
+                                        <span style="color: #FFD700;">⭐⭐⭐⭐</span>
+                                    </div>
+                                    <p>Muy buen producto, solo tardó un poco más de lo esperado en llegar, pero valió la pena la espera.</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'shipping':
+                    content.innerHTML = `
+                        <div>
+                            <h3>Información de Envío</h3>
+                            <div style="margin-top: 2rem;">
+                                <p><strong>Envío Estándar:</strong> 3-5 días hábiles - GRATIS en compras mayores a $500</p>
+                                <p><strong>Envío Express:</strong> 1-2 días hábiles - $15.99</p>
+                                <p><strong>Envío Internacional:</strong> 7-15 días hábiles - Tarifa variable según destino</p>
+                                <br>
+                                <h4>Política de Devoluciones</h4>
+                                <p>Aceptamos devoluciones dentro de los 30 días posteriores a la compra. El producto debe estar en su empaque original y sin usar.</p>
+                            </div>
+                        </div>
+                    `;
+                    break;
+            }
+        }
+>>>>>>> desarrollo
     </script>
 </body>
 </html>

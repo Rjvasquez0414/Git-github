@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 
 // Ruta principal
+// Ruta principal (tu landing page actual)
 Route::get('/', function () {
     $cartCount = session('cart') ? count(session('cart')) : 0;
     
@@ -37,6 +38,7 @@ Route::post('/lista-compras/eliminar/{id}', function ($id) {
     return redirect('/lista-compras');
 });
 
+// Ruta para detalles del producto
 // Ruta para detalles del producto
 Route::get('/detalles/{id?}', function ($id = 1) {
     $productos = [
@@ -169,4 +171,5 @@ Route::post('/carrito/vaciar', function () {
         'success' => true,
         'cartCount' => 0
     ]);
+})->name('carrito.vaciar');
 })->name('carrito.vaciar');
