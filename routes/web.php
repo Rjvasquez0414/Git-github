@@ -2,17 +2,21 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
-
-
 // Ruta principal (tu landing page actual)
 Route::get('/', function () {
-    return view('welcome');
+    $cartCount = session('cart') ? count(session('cart')) : 0;
+    
+    $productos = [
+        ['id' => 1, 'nombre' => 'Casco MT-15 Edition', 'precio' => 299.99, 'imagen' => '/images/products/casco-mt15.png'],
+        ['id' => 2, 'nombre' => 'Escape Akrapovic', 'precio' => 599.99, 'imagen' => '/images/products/escape.jpg.png'],
+        ['id' => 3, 'nombre' => 'Kit Performance', 'precio' => 899.99, 'imagen' => '/images/products/kit.png'],
+        ['id' => 4, 'nombre' => 'Guantes Racing', 'precio' => 149.99, 'imagen' => '/images/products/guantes.png']
+    ];
+    
+    return view('welcome', compact('cartCount', 'productos'));
 });
 
+// Ruta para detalles del producto
 // Ruta para detalles del producto
 Route::get('/detalles/{id?}', function ($id = 1) {
     $productos = [
@@ -20,29 +24,129 @@ Route::get('/detalles/{id?}', function ($id = 1) {
             'nombre' => 'Casco MT-15 Edition',
             'precio' => 299.99,
             'descripcion' => 'Casco edición especial MT-15 con diseño aerodinámico',
-            'categoria' => 'Cascos'
+            'categoria' => 'Cascos',
+            'imagen' => '/images/products/casco-mt15.png'
         ],
         2 => [
             'nombre' => 'Escape Akrapovic',
             'precio' => 599.99,
             'descripcion' => 'Sistema de escape deportivo de alto rendimiento',
-            'categoria' => 'Performance'
+            'categoria' => 'Performance',
+            'imagen' => '/images/products/escape.jpg.png'
         ],
         3 => [
             'nombre' => 'Kit Performance',
             'precio' => 899.99,
             'descripcion' => 'Kit completo de mejoras de rendimiento para MT-15',
-            'categoria' => 'Performance'
+            'categoria' => 'Performance',
+            'imagen' => '/images/products/kit.png'
         ],
         4 => [
             'nombre' => 'Guantes Racing',
             'precio' => 149.99,
             'descripcion' => 'Guantes profesionales con protección de carbono',
-            'categoria' => 'Equipamiento'
+            'categoria' => 'Equipamiento',
+            'imagen' => '/images/products/guantes.png'
         ]
     ];
     
     $producto = $productos[$id] ?? $productos[1];
+    $cartCount = session('cart') ? count(session('cart')) : 0;
     
-    return view('detalles', compact('producto', 'id'));
+    return view('detalles', compact('producto', 'id', 'cartCount'));
 })->name('producto.detalles');
+
+// Ruta para mostrar el carrito
+Route::get('/carrito', function () {
+    $cart = session('cart', []);
+    $cartCount = count($cart);
+    $total = 0;
+    
+    foreach ($cart as $item) {
+        $total += $item['precio'] * $item['cantidad'];
+    }
+    
+    return view('carrito', compact('cart', 'cartCount', 'total'));
+})->name('carrito');
+
+// Ruta para agregar al carrito
+Route::post('/carrito/agregar', function () {
+    $data = request()->json()->all();
+    $cart = session('cart', []);
+    
+    $id = $data['id'];
+    
+    // Si el producto ya existe, aumentar cantidad
+    if (isset($cart[$id])) {
+        $cart[$id]['cantidad'] += $data['cantidad'] ?? 1;
+    } else {
+        // Agregar nuevo producto
+        $cart[$id] = [
+            'id' => $id,
+            'nombre' => $data['nombre'],
+            'precio' => $data['precio'],
+            'imagen' => $data['imagen'] ?? '',
+            'cantidad' => $data['cantidad'] ?? 1
+        ];
+    }
+    
+    session(['cart' => $cart]);
+    
+    return response()->json([
+        'success' => true,
+        'cartCount' => count($cart),
+        'message' => 'Producto agregado al carrito'
+    ]);
+})->name('carrito.agregar');
+
+// Ruta para actualizar cantidad
+Route::post('/carrito/actualizar', function () {
+    $data = request()->json()->all();
+    $cart = session('cart', []);
+    
+    $id = $data['id'];
+    
+    if (isset($cart[$id])) {
+        $cart[$id]['cantidad'] = $data['cantidad'];
+        
+        if ($cart[$id]['cantidad'] <= 0) {
+            unset($cart[$id]);
+        }
+    }
+    
+    session(['cart' => $cart]);
+    
+    return response()->json([
+        'success' => true,
+        'cartCount' => count($cart)
+    ]);
+})->name('carrito.actualizar');
+
+// Ruta para eliminar del carrito
+Route::post('/carrito/eliminar', function () {
+    $data = request()->json()->all();
+    $cart = session('cart', []);
+    
+    $id = $data['id'];
+    
+    if (isset($cart[$id])) {
+        unset($cart[$id]);
+    }
+    
+    session(['cart' => $cart]);
+    
+    return response()->json([
+        'success' => true,
+        'cartCount' => count($cart)
+    ]);
+})->name('carrito.eliminar');
+
+// Ruta para vaciar el carrito
+Route::post('/carrito/vaciar', function () {
+    session()->forget('cart');
+    
+    return response()->json([
+        'success' => true,
+        'cartCount' => 0
+    ]);
+})->name('carrito.vaciar');

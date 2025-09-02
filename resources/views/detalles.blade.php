@@ -641,7 +641,14 @@
                 <li><a href="/">Inicio</a></li>
                 <li><a href="/#products">Productos</a></li>
                 <li><a href="/#contact">Contacto</a></li>
-                <li><a href="#" style="background: var(--accent-red); padding: 0.5rem 1.5rem; border-radius: 25px;">Carrito (0)</a></li>
+                <li style="position: relative;">
+                    <a href="/carrito" style="background: var(--accent-red); padding: 0.5rem 1.5rem; border-radius: 25px;">
+                        🛒 Carrito
+                        @if($cartCount > 0)
+                        <span style="background: var(--accent-red); color: white; border-radius: 50%; padding: 2px 6px; font-size: 0.75rem; position: absolute; top: -5px; right: -10px;">{{ $cartCount }}</span>
+                        @endif
+                    </a>
+                </li>
             </ul>
         </div>
     </nav>
@@ -829,21 +836,47 @@
 
         // Add to cart
         function addToCart() {
-            const btn = event.target;
-            const originalText = btn.textContent;
-            btn.textContent = '✓ Añadido al Carrito';
-            btn.style.background = 'linear-gradient(45deg, #00C851, #00FF00)';
-            
-            setTimeout(() => {
-                btn.textContent = originalText;
-                btn.style.background = '';
-            }, 2000);
-
-            // Update cart counter
-            const cartBadge = document.querySelector('.nav-links a[href="#"]');
-            const currentCount = parseInt(cartBadge.textContent.match(/\d+/)[0]);
             const quantity = parseInt(document.getElementById('quantity').value);
-            cartBadge.textContent = `Carrito (${currentCount + quantity})`;
+            
+            fetch('/carrito/agregar', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({
+                    id: {{ $id }},
+                    nombre: '{{ $producto["nombre"] }}',
+                    precio: {{ $producto["precio"] }},
+                    imagen: '{{ $producto["imagen"] ?? "" }}',
+                    cantidad: quantity
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Actualizar el contador del carrito
+                    const cartBadge = document.querySelector('.nav-links a[href="/carrito"]');
+                    if (cartBadge) {
+                        cartBadge.innerHTML = `🛒 Carrito <span style="background: var(--accent-red); color: white; border-radius: 50%; padding: 2px 6px; font-size: 0.75rem; position: absolute; top: -5px; right: -10px;">${data.cartCount}</span>`;
+                    }
+                    
+                    // Mostrar confirmación
+                    const btn = event.target;
+                    const originalText = btn.textContent;
+                    btn.textContent = '✓ Añadido al Carrito';
+                    btn.style.background = 'linear-gradient(45deg, #00C851, #00FF00)';
+                    
+                    setTimeout(() => {
+                        btn.textContent = originalText;
+                        btn.style.background = '';
+                    }, 2000);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al añadir al carrito');
+            });
         }
 
         // Color selection

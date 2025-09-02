@@ -509,6 +509,37 @@
             opacity: 1;
             transform: translateY(0);
         }
+
+        .product-image {
+            height: 200px;
+            position: relative;
+            overflow: hidden;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            transition: transform 0.3s ease;
+        }
+
+        .product-card:hover .product-image {
+            transform: scale(1.05);
+        }
+
+        /* Fallback para cuando no carga la imagen */
+        .product-image::after {
+            content: '🏍️';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3rem;
+            opacity: 0.2;
+            z-index: 0;
+        }
+
+        /* Si la imagen carga correctamente, oculta el emoji */
+        .product-image[style*="background-image"] .product-image::after {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -521,7 +552,14 @@
                 <li><a href="#features">Características</a></li>
                 <li><a href="#products">Productos</a></li>
                 <li><a href="#contact">Contacto</a></li>
-                <li><a href="#" style="background: var(--accent-red); padding: 0.5rem 1.5rem; border-radius: 25px;">Carrito (0)</a></li>
+                <li style="position: relative;">
+                    <a href="/carrito" style="background: var(--accent-red); padding: 0.5rem 1.5rem; border-radius: 25px;">
+                        🛒 Carrito
+                        @if($cartCount > 0)
+                        <span style="background: var(--accent-red); color: white; border-radius: 50%; padding: 2px 6px; font-size: 0.75rem; position: absolute; top: -5px; right: -10px;">{{ $cartCount }}</span>
+                        @endif
+                    </a>
+                </li>
             </ul>
         </div>
     </nav>
@@ -561,49 +599,33 @@
     </section>
 
     <!-- Products Section -->
+    <!-- Products Section actualizada -->
     <section class="products" id="products">
         <h2>Productos Destacados</h2>
         <div class="products-grid">
+            @foreach($productos as $producto)
             <div class="product-card fade-in">
-                <div class="product-image"></div>
+                <div class="product-image" style="background-image: url('{{ $producto['imagen'] ?? '' }}'); background-size: cover; background-position: center;">
+                    @if(isset($producto['badge']))
+                    <span style="position: absolute; top: 10px; right: 10px; background: var(--accent-red); color: white; padding: 5px 15px; border-radius: 20px; font-size: 0.75rem; font-weight: bold;">{{ $producto['badge'] }}</span>
+                    @endif
+                </div>
                 <div class="product-info">
-                    <h3 class="product-name">Casco MT-15 Edition</h3>
-                    <p class="product-price">$299.99</p>
-                    <a href="/detalles/1" class="product-button" style="display: block; text-align: center; text-decoration: none; color: white;">
-                        Ver Detalles
-                    </a>
+                    <h3 class="product-name">{{ $producto['nombre'] }}</h3>
+                    <p class="product-price">${{ number_format($producto['precio'], 2) }}</p>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button class="product-button" style="flex: 1;" 
+                                onclick="addToCartQuick({{ $producto['id'] }}, '{{ $producto['nombre'] }}', {{ $producto['precio'] }}, '{{ $producto['imagen'] ?? '' }}')">
+                            🛒 Añadir
+                        </button>
+                        <a href="/detalles/{{ $producto['id'] }}" class="product-button" 
+                        style="flex: 1; display: flex; align-items: center; justify-content: center; text-decoration: none; color: white; background: linear-gradient(45deg, #333, #555);">
+                            👁️ Ver
+                        </a>
+                    </div>
                 </div>
             </div>
-            <div class="product-card fade-in">
-                <div class="product-image"></div>
-                <div class="product-info">
-                    <h3 class="product-name">Escape Akrapovic</h3>
-                    <p class="product-price">$599.99</p>
-                    <a href="/detalles/2" class="product-button" style="display: block; text-align: center; text-decoration: none; color: white;">
-                        Ver Detalles
-                    </a>
-                </div>
-            </div>
-            <div class="product-card fade-in">
-                <div class="product-image"></div>
-                <div class="product-info">
-                    <h3 class="product-name">Kit Performance</h3>
-                    <p class="product-price">$899.99</p>
-                    <a href="/detalles/3" class="product-button" style="display: block; text-align: center; text-decoration: none; color: white;">
-                        Ver Detalles
-                    </a>
-                </div>
-            </div>
-            <div class="product-card fade-in">
-                <div class="product-image"></div>
-                <div class="product-info">
-                    <h3 class="product-name">Guantes Racing</h3>
-                    <p class="product-price">$149.99</p>
-                    <a href="/detalles/4" class="product-button" style="display: block; text-align: center; text-decoration: none; color: white;">
-                        Ver Detalles
-                    </a>
-                </div>
-            </div>
+            @endforeach
         </div>
     </section>
 
@@ -669,7 +691,60 @@
         document.querySelectorAll('.fade-in').forEach(el => {
             observer.observe(el);
         });
-        
+
+    </script>
+
+<script>
+    // CSRF Token para Laravel
+    const csrfToken = '{{ csrf_token() }}';
+    
+    // Función para añadir al carrito desde la página principal
+    function addToCartQuick(productId, productName, productPrice, productImage) {
+        fetch('/carrito/agregar', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken
+            },
+            body: JSON.stringify({
+                id: productId,
+                nombre: productName,
+                precio: productPrice,
+                imagen: productImage,
+                cantidad: 1
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Actualizar el contador del carrito
+                updateCartBadge(data.cartCount);
+                
+                // Mostrar confirmación
+                const button = event.target;
+                const originalText = button.textContent;
+                button.textContent = '✓ Añadido';
+                button.style.background = '#00C851';
+                
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.background = '';
+                }, 2000);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error al añadir al carrito');
+        });
+    }
+    
+    // Actualizar el contador del carrito
+    function updateCartBadge(count) {
+        const cartLink = document.querySelector('.nav-links a[href="/carrito"]');
+        if (cartLink) {
+            cartLink.innerHTML = `🛒 Carrito ${count > 0 ? `<span style="background: var(--accent-red); color: white; border-radius: 50%; padding: 2px 6px; font-size: 0.75rem; position: absolute; top: -5px; right: -10px;">${count}</span>` : ''}`;
+        }
+    }
     </script>
 </body>
 </html>
